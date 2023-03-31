@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>img Menu</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css"
+      integrity="sha512-5A8nwdMOWrSz20fDsjczgUidUBR8liPYU+WymTZP1lmY9G6Oc7HlZv156XqnsgNUzTyMefFTcsFH/tnJE/+xBg=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css?family=Tangerine"
+    />
+    <script
+      src="https://kit.fontawesome.com/19e5651e17.js"
+      crossorigin="anonymous"
+    ></script>
+  </head>
+  <body>
+    <div id="image-container">
+      <img src="bg-img1.jpg" alt="bg-img" id="img1" class="json1" />
+      <img src="bg-img1.jpg" alt="bg-img" id="img2" class="json2" />
+      <img src="bg-img1.jpg" alt="bg-img" id="img3" class="json3" />
+    </div>
+    <div id="result"></div>
+    <div>
+      <h1><a href="../p1/index.html">version 1</a></h1>
+      <h2>
+        right-click context menu helps us to have different menu on single Image
+      </h2>
+    </div>
+
+    <div>
+      <h1><a href="../p2/index.html">version 2</a></h1>
+      <h2>
+        right-click context menu helps you to prevent users from having default
+        right click also gives you a custom able menu by the way helps you to
+        have different menu on different elements
+      </h2>
+    </div>
+    <div>
+      <h1><a href="../p3/index.html">version 3</a></h1>
+      <h2>In this version it is completely independent from script js file</h2>
+    </div>
+
+    <script src="allData.js"></script>
+    <script type="text/javascript">
+      const images = document.querySelectorAll("img");
+      images.forEach((item) => {
+        item.addEventListener("contextmenu", (event) => {
+          event.preventDefault();
+          let menuBoxElem = document.getElementById("menuid");
+          if (menuBoxElem) {
+            menuBoxElem.remove();
+          }
+          const menuContainer = createMenuContainer(
+            event.clientX,
+            event.clientY
+          );
+          appendMenu(menuContainer, globalData[item.className]);
+        });
+      });
+
+      function createMenuContainer(x, y) {
+        const menuContainer = document.createElement("div");
+        menuContainer.setAttribute("id", "menuid");
+        menuContainer.classList.add("contextMenu");
+        menuContainer.style.left = x + "px";
+        menuContainer.style.top = y + "px";
+        menuContainer.style.display = "block";
+        document.body.appendChild(menuContainer);
+        return menuContainer;
+      }
+
+      function appendMenu(container, data) {
+        let menuList = document.createElement("ul");
+        data.forEach((obj, index) => {
+          let list = document.createElement("li");
+          list.classList.add("item");
+          let arrowElem;
+          if (!obj.separator) {
+            // icon
+            let iconElem = document.createElement("div");
+            iconElem.classList.add("icon");
+            iconElem.innerHTML = `<i class="${obj.icon}" aria-hidden="true"></i>`;
+            list.appendChild(iconElem);
+            // label
+            let labelElem = document.createElement("div");
+            labelElem.classList.add("label");
+            let textNode = document.createTextNode(obj.label);
+            labelElem.appendChild(textNode);
+            list.appendChild(labelElem);
+            // arrow icon
+            arrowElem = document.createElement("div");
+            arrowElem.classList.add("arrow");
+            if (obj.items && obj.items.length) {
+              arrowElem.innerHTML = `<i class="fa-solid fa-chevron-right"></i>`;
+              list.appendChild(appendMenu(menuList, obj.items));
+            }
+            list.appendChild(arrowElem);
+            menuList.appendChild(list);
+          } else {
+            let hr = document.createElement("hr");
+            menuList.appendChild(hr);
+          }
+          container.appendChild(menuList);
+        });
+        return menuList;
+      }
+    </script>
+  </body>
+</html>
